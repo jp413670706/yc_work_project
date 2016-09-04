@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout pattern="%-5p %C{1} (%F:%L) - %m%n" />
+		</Console>
+		<File name="fileLog" fileName="logs/vote.log">
+			<PatternLayout pattern="%d %-5p %C{1} (%F:%L) - %m%n" />
+		</File>
+	</Appenders>
+	<Loggers>
+		<!-- 设置某个包的级别 -->
+		<Logger name="com.yc" level="debug" />
+
+		<!-- 总日志级别 -->
+		<Root level="debug">
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="fileLog" />
+		</Root>
+	</Loggers>
+</Configuration>

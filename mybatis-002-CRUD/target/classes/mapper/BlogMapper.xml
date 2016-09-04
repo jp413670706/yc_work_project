@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 与映射接口的全类名一致 -->
+<mapper namespace="com.yc.mybatis.mapper.BlogMapper">
+
+	<!-- id与映射接口中的方法名一致
+	resultType与映射接口中方法的返回类型的全类一致
+	parameterType与映射接口中方法的参数列表的参数类型一致
+	#{xxx} xx与映射接口中方法的参数列表的参数名一样
+	 -->
+	<select id="getBlogById" resultType="Blog" parameterType="int">
+		select * from Blog where id = #{id}
+	</select>
+	
+	<!-- 映射插入 -->
+	<insert id="insertBlog" parameterType="Blog">
+		insert into blog values(#{id}, #{title}, #{author})
+	</insert>
+	
+	<update id="updateBlog" parameterType="Blog">
+		update blog set title=#{title}, author=#{author} where id=#{id}
+	</update>
+	
+	<delete id="delBlog" parameterType="int">
+		delete from blog where id=#{id}
+	</delete>
+	
+	<select id="findAllBlogs" resultType="Blog">
+		select * from blog
+	</select>
+</mapper>

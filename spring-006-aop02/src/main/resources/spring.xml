@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	 xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+        
+    <!-- 具体操作实例对象 -->    
+    <bean id="ac" class="com.yc.spring.aop.impl.ArithmeticCalcultionImpl" />
+        
+    <!-- 目标 -->
+	<bean id="loggingAspect" class="com.yc.spring.aop.impl.LoggingAspect" />
+	
+	<!-- 代理 -->
+	<aop:config>
+			<!-- 切点
+				* :表示任意修饰符， 返回类型, 类名， 包名, 方法名
+				.. : 表示多个
+			 -->
+		<aop:pointcut expression="execution(* com.yc.spring.aop..*.*(..))" id="mypointcut"/>
+			<!-- 连接点 -->
+		<aop:aspect id="myaspect" ref="loggingAspect">
+			<!-- <aop:before method="beforeMethod" pointcut-ref="mypointcut"/>
+			<aop:after method="afterMethod" pointcut-ref="mypointcut"/>
+			returning:返回值的参数名 
+			<aop:after-returning method="afterReturingMethod" pointcut-ref="mypointcut" returning="result"/>
+			throwing: 出现异常的参数名
+			<aop:after-throwing method="afterThrowingMethod" pointcut-ref="mypointcut" throwing="e"/> -->
+			
+			<aop:around method="aroundMethod" pointcut-ref="mypointcut"/>
+		</aop:aspect>
+	</aop:config>
+</beans>

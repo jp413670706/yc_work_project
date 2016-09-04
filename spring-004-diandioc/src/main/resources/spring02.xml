@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- bean表示spring容器中的一个实例对象 id为实例对象的标识, class表示实例对象的类型 property表示实例对象的属性 
+		name表示改名， value属性值 -->
+
+	<bean id="who1" class="com.yc.spring.day01.Person">
+		<property name="name" value="小黑" />
+	</bean>
+
+	<bean id="who02" class="com.yc.spring.day01.Person">
+		<property name="name" value="小白" />
+	</bean>
+
+	<!-- depends-on: 依赖bean <bean id="hello" class="com.yc.spring.day01.Hello" 
+		autowire="byName" depends-on="who"> </bean> -->
+
+	<!-- <bean id="hello02" class="com.yc.spring.day01.Hello" autowire="byType"> 
+		</bean> -->
+
+	<!-- abstract ：表示是一个模板,不会用来创建对象, 用来被别的对象继承 -->
+	<bean id="hello" class="com.yc.spring.day01.Hello"  abstract="true">
+		<property name="who" ref="who02" />
+		<!-- 放在bean下创建的对象，只能在当前对象中有效 -->
+		<property name="lists">
+			<list>
+				<value>aaaaaaa</value>
+				<value>bbbbbb</value>
+				<value>cccccc</value>
+			</list>
+		</property>
+		<property name="arrs">
+			<array>
+				<value>aaaaaaa</value>
+				<value>bbbbbb</value>
+				<value>cccccc</value>
+			</array>
+		</property>
+		<property name="map">
+			<map>
+				<entry key="1" value="aaaaaaaaa" />
+				<entry key="2" value="bbbbbbbbb" />
+				<entry key="3" value="ccccccccc" />
+			</map>
+		</property>
+
+		<property name="props">
+			<props>
+				<prop key="1">aaaaaaaaa</prop>
+				<prop key="2">bbbbbbbbbbbb</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 引用util命名空间, 来公共的集合对象bean实例对象 -->
+	<util:list id="lists">
+		<value>AAAAAAAA</value>
+		<value>BBBBBBBBB</value>
+		<value>CCCCCCCC</value>
+	</util:list>
+
+	<bean id="hello2" class="com.yc.spring.day01.Hello" parent="hello">
+		<property name="who" ref="who1" />
+		<property name="lists" ref="lists"/>
+	</bean>
+	
+	<bean id="hello3" class="com.yc.spring.day01.Hello" parent="hello"/>
+</beans>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 与映射接口的全类名一致 -->
+<mapper namespace="com.yc.mybatis.mapper.CourseMapper">
+	<!--嵌套查询-->
+	<resultMap type="Course" id="CourseMap">
+		<id column="id" property="id"/>
+		<collection property="stus" column="id" ofType="Student" select="getStusByCourseId"/>
+	</resultMap>
+	<select id="getCourseById" resultMap="CourseMap" parameterType="int">
+		select * from course where id = #{id}
+	</select>
+
+	<select id="getStusByCourseId" resultType="Student" parameterType="int">
+		select * from student where id in 
+		(select studentid from STUDENTCOURSE where courseid = #{id})
+	</select>
+</mapper>

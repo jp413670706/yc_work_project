@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="db.properties"/> <!-- 加载外部的属性文件, 使用${key}为取到 -->
+	
+	<typeAliases>
+		<!-- <typeAlias type="" alias=""/>  一次只对一个类，进行定义别名-->
+		<package name="com.yc.mybatis.entity"/> <!-- 对包中的所有类命别名，别名为类名 -->
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driverClassName}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="mapper/BlogMapper.xml"/> <!-- 注册映射文件 -->
+		<mapper resource="mapper/TeacherMapper.xml"/> <!-- 注册映射文件 -->
+	</mappers>
+</configuration>

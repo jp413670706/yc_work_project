@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+	<book id="1">
+		<bookName>THINK IN JAVA</bookName>
+		<bookAuthor>张三</bookAuthor>
+		<bookISBN>11111111</bookISBN>
+		<bookPrice>60.0</bookPrice>
+	</book>
+	
+	<book id="2">
+		<bookName>编程珠玑</bookName>
+		<bookAuthor>李四</bookAuthor>
+		<bookISBN>1222222</bookISBN>
+		<bookPrice>50.0</bookPrice>
+	</book>
+	
+	<book id="3">
+		<bookName>ORACLE</bookName>
+		<bookAuthor>王五</bookAuthor>
+		<bookISBN>1233333</bookISBN>
+		<bookPrice>30.0</bookPrice>
+	</book>
+
+</books>

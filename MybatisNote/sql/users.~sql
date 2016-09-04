@@ -1,0 +1,11 @@
+create table users(
+	id int primary key,
+	name varchar2(20) not null,
+	sex varchar2(4) 
+)
+
+insert into users values(1,'nana','ÄĞ');
+insert into users values(2,'haha','Å®');
+insert into users values(3,'kaka','å¥?);
+
+select * from users;

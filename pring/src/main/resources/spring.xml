@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+
+
+	<!-- 配制数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl" />
+		<property name="username" value="mybatis" />
+		<property name="password" value="a" />
+	</bean>
+	<!-- jdbc操作数据库的模板类 -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+	<bean id="bookShopDao" class="com.yc.spring.dao.impl.BookShopDaoImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>
+	
+	<bean id="bookShopService" class="com.yc.spring.service.impl.BookShopServiceImpl">
+		<property name="bookShopDao" ref="bookShopDao"/>
+	</bean>
+	
+	<bean id="bookShopCashier" class="com.yc.spring.service.impl.BookShopCashier">
+		<property name="bookShopService" ref="bookShopService"/>
+	</bean>
+	
+	<!-- spring提供的事务处理管理器 : 切面 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
+	<!-- dataSource必须与数据操作的dataSource是同一个 -->
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- 定义事务处理通知 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+	
+		<!-- 
+		propagation事务的传播方式: 是指一个事务中，嵌套了其它子事务, 父事务中的事务与子事务之间 事务处理的方式
+			REQUIRED(默认): 没有事务创建事务, 有事务原已有的事务
+			REQUIRES_NEW : 不敢有没有事务，都新创建事务 
+			
+		isolation事务的隔离级别: 
+		DEFAULT: 使用数据库默认的隔离级别
+		no-rollback-for :是指什么异常不回滚
+		rollback-for(默认所有的异常都回滚) :是指什么异常回滚， 
+		read-only(默认false) ：是否为只读事务, 主要是优化查询
+		timeout(默认：-1表示不限时间)：事务超时
+		 -->
+		<tx:attributes>
+			<tx:method name="purchase" 
+			propagation="REQUIRES_NEW"
+			 isolation="DEFAULT" 
+			no-rollback-for="com.yc.spring.exception.AccountException"
+			rollback-for="java.lang.Exception"
+			read-only="false"
+			timeout="2"/>  <!-- 定义连接点 -->
+			<tx:method name="checkout" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 事务代理 
+		spring代理对象，要通过代理接口来实现, 如果使用的是实现类时， 就要出现ClassCaseException异常
+		可以使用cglib框架来实现 实现类来进行代理
+		设置proxy-target-class="true"就可以了, 默认为false使用spring的代理
+	-->
+	<aop:config proxy-target-class="true">
+		<aop:pointcut expression="execution(* com.yc.spring.service..*.*(..))" id="pointcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut"/>
+	</aop:config>
+</beans>

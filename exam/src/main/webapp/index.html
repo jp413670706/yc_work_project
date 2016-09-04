@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>考试系统</title>
+	
+	
+	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$.ajax({
+						url : 'questions_getQuestions.action',
+						dataType : 'JSON',
+						success : function(data) {
+							if (data == 0) {
+								alert("系统错误"+ data.msg);
+								return;
+							}
+						
+							var allque=new ShowQuestions(data.obj);  // times,   obj=> array
+							allque.showque();
+
+						}
+					});
+		})();
+	</script>
+</head>
+<body>
+		<div id="questions">
+		
+		</div>
+	<script type="text/javascript">
+		function ShowQuestions(questions){
+			this.que=questions;
+		}
+		
+		var timer;
+		
+		ShowQuestions.prototype={
+			showque:function(){
+				var ques=document.getElementById("questions");
+				//插入剩余时间的div
+				var timebox=document.createElement("div");
+				timebox.innerHTML="剩余时间(单位 s): ";
+				var time=document.createElement("span");
+				timebox.appendChild(time);  //<div>剩余时间(单位 s);<span></span></div>
+				
+				var settime=new Date().getTime()+   this.que.times;
+				timer=setInterval(function(){//给剩余时间设定一个定时器，保证实时更新
+					var innertime=parseInt((settime-new Date().getTime())/1000);
+					if(innertime==0){
+						clearInterval(timer);
+						submit(timer);
+					}
+					time.innerHTML=innertime;
+				},50);
+				ques.appendChild( timebox );
+				
+				var hid=document.createElement( "input");
+				hid.type="hidden";
+				hid.name="answer";
+				hid.id="answer";
+				
+				var eidarray=new Array();
+				
+				
+				for(var i=0;i<this.getTolal();i++){
+					var num=document.createElement("span");
+					num.id="q"+i;      
+					
+					num.innerHTML=(i+1)+"、";  // 1,  2,  3 ,
+					
+					eidarray.push( this.que.obj[i]['eid']);   //将数据库对应的题号存到数据组
+					
+					//num.innerHTML=this.que.obj[i]['eid']+"、";  //<span id="q1">1、</span>
+					ques.appendChild(num);
+					var question=document.createElement("span");
+					question.innerHTML=this.que.obj[i]['question'];   //题干
+					ques.appendChild(question);  // <span>xxxx</span>
+					var options=document.createElement("p");  //当前题目的选项
+					for(var j=0;j<4;j++){
+						var inp=document.createElement("input");
+						inp.type="radio";
+						inp.name="ans_"+ this.que.obj[i]['eid']   ;       //      单选框的  name   =>  ans_数库的题号
+						inp.value=j+1;  //
+						var ans=document.createElement("span");
+						if( j==0){
+							//             &#65;  => 转义符  ->   A;.xxxxx
+							ans.innerHTML="&#"+(65+j)+";、"+this.que.obj[i]['a'];
+						}else if( j==1){   // &#66    
+							ans.innerHTML="&#"+(65+j)+";、"+this.que.obj[i]['b'];
+						}else if( j==2){
+							ans.innerHTML="&#"+(65+j)+";、"+this.que.obj[i]['c'];
+						}else if( j==3){
+							ans.innerHTML="&#"+(65+j)+";、"+this.que.obj[i]['d'];
+						}
+						
+
+						options.appendChild(inp);
+						options.appendChild(ans);
+					}
+					ques.appendChild(options);
+					ques.appendChild(document.createElement("hr"));
+				}
+				
+				hid.value=eidarray.join(',');   //将数据库的题号拼接成  xxx,xxx,存到隐藏域
+				ques.appendChild( hid );
+				
+				var btn=document.createElement("input");
+				btn.type="button";
+				btn.value="提交试卷";
+				btn.onclick=submit;
+				ques.appendChild(btn);
+				
+			},
+			getTolal:function(){
+				return this.que.obj.length;
+			}
+		}
+		function submit(){
+			clearInterval(timer);  //关闭计时器
+			//取消页面中所有的input元素的操作
+			var allinput=document.getElementsByTagName("INPUT");
+			for(var i=0;i<allinput.length;i++){
+				allinput[i].disabled=true;
+			}
+			
+			
+			var ids=$("#answer").val();   // 取出题号     xxxx,xxxx,xx,
+			var idarray=ids.split(",");
+			for( var i=0;i<idarray.length;i++){
+				var id=idarray[i];   //取出题号      xxx
+				//alert(  $("input[name='ans_"+id+"']:checked")  );
+				var a="ans_"+id;
+				var val=$("input:radio[name="+a+"]:checked").val();   //取单选 框的值      1,2,3,4
+				if( val==undefined){
+					idarray[i]=id+"_"+0;  //如果用户没有做题，则0
+				}else{
+					idarray[i]=id+"_"+val;
+				}
+				
+			}
+			$.ajax({
+				url : 'questions_getresult.action',
+				data: 'answer='+ idarray.join(","),          //   answer=1111_1,22222_1,
+				dataType : 'JSON',
+				type: 'POST',
+				success : function(data) {
+					if (data == 0) {
+						alert("系统错误"+ data.msg);
+						return;
+					}
+					
+					var newpage="submit2.html#"+(data.obj.total)+"_"+data.obj.score;
+					window.open(newpage,"new window","width=300,height=300");
+					//close();
+				
+					
+
+				}
+			});
+			
+			
+			
+		}
+		
+	</script>
+</body>
+</html>

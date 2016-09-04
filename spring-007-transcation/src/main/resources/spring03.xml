@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util.xsd">
+        
+        <!-- 静态工厂的使用
+        	class : 静态工厂类
+        	factory-method ： 静态工厂类中，创建对象的方法
+        	id :对应的返回实例的类型
+         -->
+	<bean id="person" class="com.yc.spring.day01.PersonStaticFactroy" factory-method="newInstance">
+		<constructor-arg value="zhangsan"/> <!-- 工厂方法的参数 -->
+	</bean>
+	
+	
+	 <!-- 实例工厂的使用
+	 		1.创建工厂对象bean
+	 		2.通过工厂创建对象
+        	factory-bean : 实例工厂类的对象
+        	factory-method ：实例工厂类中，创建对象的方法
+         -->
+         
+         
+    <bean id="personFactory" class="com.yc.spring.day01.PersonInstanceFactroy"/>
+     
+	<bean id="person02" factory-bean="personFactory" factory-method="newInstance">
+		<constructor-arg value="xiaoming"/> <!-- 工厂方法的参数 -->
+	</bean>
+	
+	
+	<!--使用FactoryBean工厂
+		1.实现FactoryBean接口	
+	 -->
+	 
+	 <bean id="person03" class="com.yc.spring.day01.PersonFactoryBean">
+	 	<property name="person">
+	 		<bean class="com.yc.spring.day01.Person">
+	 			<property name="name" value="嘿嘿"/>
+	 			<property name="age" value="23"/>
+	 			<property name="gender" value="女"/>
+	 		</bean>
+	 	</property>
+	 </bean>
+</beans>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- 
+		bean表示spring容器中的一个实例对象
+		id为实例对象的标识, class表示实例对象的类型
+		
+		property表示实例对象的属性
+		name表示改名， value属性值
+	 -->
+	<bean id="hello" class="com.yc.spring.day01.Hello">
+		<property name="who" value="小黑"/>
+	</bean>
+	
+	<bean id="a4" class="com.yc.spring.day01.impl.A4Paper"/>
+	<bean id="b5" class="com.yc.spring.day01.impl.B5Paper"/>
+	<bean id="bwi" class="com.yc.spring.day01.impl.BlackWriteInk"/>
+	<bean id="ci" class="com.yc.spring.day01.impl.ColorInk"/>
+	
+	<bean id="pm01"  class="com.yc.spring.day01.PrintMachine">
+	<!-- ref引入spring容器中的实例对象, 通过实例对象的bean的id -->
+		<property name="paper" ref="a4"/>
+		<property name="ink" ref="bwi"/>
+	</bean>
+	
+	<bean id="pm02"  class="com.yc.spring.day01.PrintMachine">
+		<property name="paper" ref="b5"/>
+		<property name="ink" ref="bwi"/>
+	</bean>
+	
+	<bean id="pm03"  class="com.yc.spring.day01.PrintMachine">
+		<property name="paper" ref="a4"/>
+		<property name="ink" ref="ci"/>
+	</bean>
+	
+	<bean id="pm04"  class="com.yc.spring.day01.PrintMachine">
+		<property name="paper" ref="b5"/>
+		<property name="ink" ref="ci"/>
+	</bean>
+</beans>

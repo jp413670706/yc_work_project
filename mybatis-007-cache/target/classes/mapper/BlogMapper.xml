@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 与映射接口的全类名一致 -->
+<mapper namespace="com.yc.mybatis.mapper.BlogMapper">
+	<!-- <cache /> 启动二级缓存 -->
+	<!-- <cache 
+	eviction="FIFO"
+	flushInterval="60000"
+	size="500"
+	readOnly="true"
+	/> 定制二级缓存 -->
+	
+	<!-- 使用第三方的缓存
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"/> -->
+
+	<!-- id与映射接口中的方法名一致
+	resultType与映射接口中方法的返回类型的全类一致
+	parameterType与映射接口中方法的参数列表的参数类型一致
+	#{xxx} xx与映射接口中方法的参数列表的参数名一样
+	 -->
+	<select id="getBlogById" resultType="Blog" parameterType="int">
+		select * from Blog where id = #{id}
+	</select>
+	
+	<!-- 映射插入 -->
+	<insert id="insertBlog" parameterType="Blog">
+		insert into blog values(#{id}, #{title}, #{author})
+	</insert>
+	
+	<update id="updateBlog" parameterType="Blog">
+		update blog set title=#{title}, author=#{author} where id=#{id}
+	</update>
+	
+	<delete id="delBlog" parameterType="int">
+		delete from blog where id=#{id}
+	</delete>
+	
+	<select id="findAllBlogs" resultType="Blog">
+		select * from blog
+	</select>
+	
+	<select id="findBlogsByLikeTitle" resultType="Blog" parameterType="string">
+		select * from blog where title like '%'||#{likeTitle}||'%'
+	</select>
+	
+	<select id="findBlogsByLikeTitle02" resultType="Blog" parameterType="Blog">
+		select * from blog where title like '%${title}%'
+	</select>
+	
+	<!-- 
+		# : 是使用点位符，进行预处理
+		$ : 直接取到值， 进行数据拼接 ==> 传入类型只能是map或对象
+	 -->
+	 
+	 <select id="findPartBlogsByPage" resultType="Blog" parameterType="map">
+	 	select * from
+		(select n.*, rownum rn from 
+		(select * from  blog) n where #{pagesize} * #{pagenum} >= rownum) where rn > #{pagesize} * (#{pagenum} - 1)
+	 </select>
+	 
+	 
+	<!-- 嵌套结果的分页处理 -->
+	 <resultMap type="BlogBean" id="BlogBeanMap">
+	 	<id column="pagesize" property="pagesize"/>
+	 	<result column="pagenum" property="pagenum"/>
+	 	<result column="totalSize" property="totalSize"/>
+	 	<collection property="blogs" column="id" ofType="Blog">
+	 		<id column="id" property="id"/>
+	 		<result  column="title" property="title"/>
+	 		<result  column="author" property="author"/>
+	 	</collection>
+	 </resultMap>
+	 
+	  <select id="findPartBlogsByPage02" resultMap="BlogBeanMap" parameterType="BlogBean">
+	 	select(select count(1) from blog) totalSize, ${pagesize} pagesize,  ${pagenum} pagenum, nn.* from
+		(select n.*, rownum rn from 
+		(select * from  blog) n where #{pagesize} * #{pagenum} >= rownum) nn 
+		where rn > #{pagesize} * (#{pagenum} - 1)
+	 </select>
+	 
+	 
+	 <!-- 嵌套查询的分页处理 -->
+	 <resultMap type="BlogBean" id="BlogBeanMap02">
+	 	<result column="pagenum" property="pagenum"/>
+	 	<result column="pagesize" property="pagesize"/>
+	 	<result column="totalSize" property="totalSize"/>
+	 	<collection property="blogs" column="{pagesize=pagesize, pagenum=pagenum}" ofType="Blog" select="getPartBlogs"/>
+	 </resultMap>
+	 
+	  <select id="findPartBlogsByPage03" resultMap="BlogBeanMap02" parameterType="BlogBean">
+	 	select ${pagesize} pagesize,  ${pagenum} pagenum, count(1) totalSize from blog
+	 </select>
+	 
+	  <select id="getPartBlogs" resultType="Blog">
+	 	select * from
+		(select n.*, rownum rn from 
+		(select * from  blog) n where #{pagesize} * #{pagenum} >= rownum) where rn > #{pagesize} * (#{pagenum} - 1)
+	 </select>
+	 
+	 
+	 <resultMap type="Blog" id="BlogMap03">
+	 	<id column="id" property="id"/>
+ 		<result  column="title" property="title"/>
+ 		<result  column="author" property="author"/>
+	 </resultMap>
+	 <select id="findPartBlogsByPage04"  parameterType="BlogBean" statementType="CALLABLE">
+	 	{call proc_page(#{pagesize}, #{pagenum},
+	 	 #{maxpage, mode=OUT, javaType=java.lang.Integer, jdbcType=NUMERIC},
+	 	 #{blogs, mode=OUT, jdbcType=CURSOR, javaType=ResultSet, resultMap=BlogMap03})}
+	 </select>
+</mapper>

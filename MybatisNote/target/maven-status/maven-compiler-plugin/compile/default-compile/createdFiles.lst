@@ -1,0 +1,3 @@
+com\jy\mybatisnote\entities\Users.class
+com\jy\mybatisnote\mapper\UsersMapper.class
+com\jy\mybatisnote\utils\MyBatisUtil.class

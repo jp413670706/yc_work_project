@@ -1,0 +1,3 @@
+com\yc\fav\entity\Favorite.class
+com\yc\fav\entity\Tag.class
+com\yc\fav\mapper\TagMapper.class

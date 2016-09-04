@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 与映射接口的全类名一致 -->
+<mapper namespace="com.yc.mybatis.mapper.TeacherMapper">
+
+	<!-- <select id="getTeacherById" resultType="Teacher" parameterType="int">
+		select * from teacher where id = #{id}
+	</select> -->
+	
+	<!-- 自定义查询结果 : 同嵌套查询的关联查询
+		当映射关系默认时，相同的字段值只取一次,要取多次，需要明确指定,字段名和属性名相同时可以省略不写
+	 -->
+	<resultMap type="Teacher" id="TeacherMap">
+	 	<id column="id" property="id"/> <!-- column表示数据库中的字段, property表示类中的属性 -->
+		<!--
+		
+		<result column="name" property="name"/>
+		<result column="gender" property="gender"/>
+		<result column="researcharea" property="researcharea"/>  
+		<result column="title" property="title"/> -->
+		<!-- 映射类的集合关联,
+		  column 表示传给另一个查询sql映射的字段值
+		ofType集合泛型的类型, 
+		select表示数据所对应的映射sql的id值-->
+		<collection property="stus" column="id" ofType="Student" select="getStusByTeacherId"/>
+	</resultMap>
+	
+	<select id="getTeacherById" resultMap="TeacherMap" parameterType="int">
+		select * from teacher where id = #{id}
+	</select>
+	
+	<select id="getStusByTeacherId" resultType="Student" parameterType="int">
+		select * from student where supervisorid = #{id}
+	</select>
+</mapper>

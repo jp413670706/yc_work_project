@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 与映射接口的全类名一致 -->
+<mapper namespace="com.yc.mybatis.mapper.StudentMapper">
+	<!-- 嵌套查询 -->
+	<resultMap type="Student" id="StuMap">
+		<!-- 对应的的是一个实体对象 association
+		对应的的是一个实体对象 collection-->
+		<association property="teacher" column="supervisorid" javaType="Teacher" select="getTeacherById"/>
+	</resultMap>
+	<select id="getStudentById"  resultMap="StuMap" parameterType="int">
+		select * from student where  id = #{id}
+	</select>
+	
+	<select id="getTeacherById" resultType="Teacher" parameterType="int">
+		select * from teacher where id = #{supervisorid}
+	</select>
+	
+	
+	<!-- 嵌套结果 -->
+	<resultMap type="Student" id="StuMap02">
+		<id column="sid" property="id"/> <!-- column表示数据库中的字段, property表示类中的属性 -->
+		<result column="sname" property="name"/>
+		<result column="sgender" property="gender"/>
+		<result column="major" property="major"/>
+		<result column="grade" property="grade"/>
+		<association property="teacher" column="supervisorid" javaType="Teacher">
+			<id column="id" property="id"/> <!-- column表示数据库中的字段, property表示类中的属性 -->
+			<result column="name" property="name"/>
+			<result column="gender" property="gender"/>
+			<result column="researcharea" property="researcharea"/>  
+			<result column="title" property="title"/>
+		</association>
+	</resultMap>
+	
+	<select id="getStudentById02" resultMap="StuMap02" parameterType="int">
+		select t.*, s.id sid, s.name sname, s.gender sgender, s.* 
+		from student s join teacher t on s.id=#{id} and s.supervisorid = t.id
+	</select>
+</mapper>

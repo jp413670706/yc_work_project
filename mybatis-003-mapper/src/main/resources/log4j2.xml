@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <!-- <PatternLayout pattern="信息: %d %-5p %C{1} (%F:%L) - %m%n"/> -->
+             <PatternLayout pattern="信息: %-5p %C{1} (%F:%L) - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+    
+    	<!-- 设置包的级别 -->
+        <Logger name="com.yc" level="debug"/>
+        
+        <!-- 总日志级别 -->
+        <Root level="error">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
